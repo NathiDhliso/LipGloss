@@ -21,3 +21,9 @@ variable "cors_allowed_origins" {
   type        = list(string)
   default     = ["*"]  # Replace with your domain in production: ["https://yourdomain.com"]
 }
+
+variable "github_token" {
+  description = "GitHub Personal Access Token for Amplify"
+  type        = string
+  sensitive   = true
+}

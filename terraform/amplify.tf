@@ -5,9 +5,13 @@
 # Get current AWS account ID
 data "aws_caller_identity" "current" {}
 
-# AWS Amplify App (Manual Deployment)
+# AWS Amplify App (with GitHub integration)
 resource "aws_amplify_app" "website" {
-  name = var.project_name
+  name       = var.project_name
+  repository = "https://github.com/NathiDhliso/LipGloss"
+
+  # OAuth token for GitHub (will be passed via variable)
+  access_token = var.github_token
 
   # Build specification for static site
   build_spec = <<-EOT
@@ -16,11 +20,13 @@ resource "aws_amplify_app" "website" {
       phases:
         build:
           commands:
-            - echo "Static site deployed"
+            - echo "Static site - no build needed"
       artifacts:
         baseDirectory: /
         files:
           - '**/*'
+      cache:
+        paths: []
   EOT
 
   # Custom rules for SPA routing
@@ -36,21 +42,28 @@ resource "aws_amplify_app" "website" {
     target = "/index.html"
   }
 
-  # Platform for manual deployment
+  # Platform for web app
   platform = "WEB"
+
+  # Enable auto-deployment from GitHub
+  enable_auto_branch_creation = false
+  enable_branch_auto_deletion = false
 
   tags = {
     Project = var.project_name
   }
 }
 
-# Amplify Branch (main)
+# Amplify Branch (main) - Auto-deploy from GitHub
 resource "aws_amplify_branch" "main" {
   app_id      = aws_amplify_app.website.id
   branch_name = "main"
 
   framework = "React"  # Generic framework
   stage     = "PRODUCTION"
+
+  # Enable auto-build on push to GitHub
+  enable_auto_build = true
 
   tags = {
     Project = var.project_name
@@ -69,27 +82,9 @@ resource "aws_s3_bucket" "amplify_deployments" {
 # Upload website files as ZIP for manual deployment
 data "archive_file" "website_zip" {
   type        = "zip"
+  source_dir  = "${path.module}/../"
   output_path = "${path.module}/website.zip"
-  
-  source {
-    content  = file("${path.module}/../index.html")
-    filename = "index.html"
-  }
-  
-  source {
-    content  = file("${path.module}/../style.css")
-    filename = "style.css"
-  }
-  
-  source {
-    content  = file("${path.module}/../script.js")
-    filename = "script.js"
-  }
-  
-  source {
-    content  = file("${path.module}/../banner.jpg")
-    filename = "banner.jpg"
-  }
+  excludes    = ["terraform", ".terraform", "*.tf", "*.tfvars", "*.md", "lambda", "node_modules", ".git", "deploy.sh", "*.ts"]
 }
 
 # Upload zip to S3
