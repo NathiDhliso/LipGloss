@@ -1,0 +1,15 @@
+{
+  "name": "lipgloss-create-contact-lambda",
+  "version": "1.0.0",
+  "description": "Lambda function to create HubSpot contacts for LipGloss Auto Spa",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "keywords": ["lambda", "hubspot", "crm"],
+  "author": "LipGloss Auto Spa",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.x"
+  }
+}

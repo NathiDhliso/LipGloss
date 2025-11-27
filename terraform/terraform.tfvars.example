@@ -1,0 +1,14 @@
+# AWS Configuration
+aws_region = "us-east-1"  # Change to your preferred region
+
+# Project Configuration
+project_name = "lipgloss-autospa"
+
+# HubSpot API Key
+# Replace with your actual HubSpot Developer API Key
+hubspot_api_key = "eu1-f994-fad9-499b-ba12-13a58ee93ebd"
+
+# CORS Configuration
+# In production, replace "*" with your actual domain
+cors_allowed_origins = ["*"]
+# cors_allowed_origins = ["https://your-domain.com", "https://www.your-domain.com"]
